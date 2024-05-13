@@ -8,76 +8,76 @@
 #include <limits>
 #include <algorithm>
 #include <unordered_map>
+#include <stack>
 
 using namespace std;
 namespace ariel
 {
 
-    int Algorithms::DFS(int v, vector<bool> &visited, vector<int> &parent, ariel::Graph &graph)
+    int Algorithms::DFSReverse(int v, vector<bool> &visited, vector<int> &parent, ariel::Graph &graph)
     {
         visited[(size_t)v] = true;
         vector<int> neighbors = graph.getNeighbors(v);
-        int n = neighbors.size();
-        for (int i = 0; i < n; i++)
+        for (size_t i = 0; i < graph.getsize(); i++)
         {
-            if (neighbors[(size_t)i] != 0)
+            if (graph.getWeight((size_t)v, (size_t)i) != 0 && (neighbors[i] != -1))
             {
-                if (!visited[static_cast<size_t>(neighbors[(size_t)i])])
+                if (!visited[(size_t)neighbors[i]])
                 {
-                    parent[(size_t)i] = v;
-                    return DFS(i, visited, parent, graph);
+                    parent[(size_t)neighbors[i]] = v;
+                    return DFS(neighbors[i], visited, parent, graph);
                 }
-                else if (visited[(size_t)i] != 0 && parent[(size_t)v] != i)
+                else if (parent[(size_t)v] != neighbors[i] && (neighbors[i] != -1))
                 {
-                    parent[(size_t)i] = v;
-                    return i;
+                    // parent[(size_t)neighbors[i]] = v;
+                    return neighbors[i];
                 }
             }
         }
-
         return -1;
     }
-    // void Algorithms::DFSReverse(int v, vector<bool> &visited, ariel::Graph &graph)
-    // {
-    //     visited[(size_t)v] = true;
-    //     vector<int> reverseNeighbors = graph.getReverseNeighbors(v);
-    //     int n = reverseNeighbors.size();
-    //     for (size_t i = 0; i < reverseNeighbors.size(); ++i)
-    //     {
-    //         if (!visited[static_cast<size_t>(reverseNeighbors[i])])
-    //         {
-    //             DFSReverse(static_cast<size_t>(reverseNeighbors[i]), visited, graph);
-    //         }
-    //     }
-    // }
+    int Algorithms::DFS(int v, vector<bool> &visited, vector<int> &parent, ariel::Graph &graph)
+    {
+        visited[(size_t)v] = true;
+        vector<int> neighbors = graph.getNeighbors(v); // Get neighbors of vertex v
+
+        for (int neighbor : neighbors) // Iterate over neighbors
+        {
+            if (neighbor != -1 && !visited[(size_t)neighbor]) // Check if the neighbor is valid and not visited
+            {
+                parent[(size_t)neighbor] = v;                                 // Set the parent of the neighbor to the current vertex v
+                int cycleNode = DFSReverse(neighbor, visited, parent, graph); // Recursive call
+                if (cycleNode != -1)
+                {
+                    return cycleNode; // Pass the cycle detection result up the call stack
+                }
+            }
+            else if (neighbor != -1 && parent[(size_t)v] != neighbor)
+            {
+                // Detected a cycle, return the node where the cycle starts
+                return neighbor;
+            }
+        }
+
+        return -1; // No cycle found
+    }
 
     bool Algorithms::isConnected(Graph &graph)
     {
         size_t V = graph.getsize();
-
         // Perform DFS traversal from each vertex
         vector<bool> visited(V, false);
         vector<int> parent(V, -1);
-        // DFS(0, visited, graph);
-
         // Check if all vertices are reachable from the first vertex
         bool isconectedVertex = true;
         // int count = 0;
         for (size_t j = 0; j < V; j++)
         {
 
-
-                int x = DFS(j, visited, parent, graph);
-
-                // if (i != j)
-            
+            int x = DFS(j, visited, parent, graph);
             for (size_t i = 0; i < V; i++)
-            {
                 if (!visited[i])
                     return false;
-            }
-
-            // else{ return false;}
             visited.clear();
             parent.clear();
         }
@@ -88,25 +88,23 @@ namespace ariel
         // visited[(size_t)v] = true; // Mark the current node as visited
         // parent[(size_t)v] = true; // Add it to the recursion stack
 
-        int vv = DFS(v, visited, parent, g);
-        // Recur for all adjacent vertices
+        // int vv = DFS(v, visited, parent, g);
+        // std::vector<int> neighbors = g.getNeighbors(v);
+        // for (int i = 0; i < neighbors.size(); ++i)
+        // {
+        //     int neighbor = neighbors[(size_t)i];
+        //     if (!visited[(size_t)neighbor])
+        //     {
+        //         constructCyclePath(neighbor, parent); // If the adjacent vertex is not visited and there is a cycle
+        //     }
+        //     else if (parent[(size_t)neighbor])
+        //     {
+        //         constructCyclePath(neighbor, parent); // If the adjacent vertex is already in the recursion stack, there is a cycle
+        //     }
+        // }
 
-        std::vector<int> neighbors = g.getNeighbors(v);
-        for (int i = 0; i < neighbors.size(); ++i)
-        {
-            int neighbor = neighbors[(size_t)i];
-            if (!visited[(size_t)neighbor])
-            {
-                constructCyclePath(neighbor, parent); // If the adjacent vertex is not visited and there is a cycle
-            }
-            else if (parent[(size_t)neighbor])
-            {
-                constructCyclePath(neighbor, parent); // If the adjacent vertex is already in the recursion stack, there is a cycle
-            }
-        }
-
-        parent[(size_t)v] = false; // Remove the vertex from the recursion stack before returning
-        return -1;                 // If no cycle is found from this vertex, return an empty string
+        // parent[(size_t)v] = false; // Remove the vertex from the recursion stack before returning
+        return -1; // If no cycle is found from this vertex, return an empty string
     }
 
     std::string Algorithms::constructCyclePath(int v, const std::vector<int> &parent)
@@ -147,10 +145,9 @@ namespace ariel
     }
     std::string Algorithms::shortestPath(Graph &g, int start, int end)
     {
-
         string path = "";
         // Check if there is a negative cycle
-        if (Algorithms::negativeCycle(g) != "0")
+        if (Algorithms::negativeCycle(g) == "there is a negetive cycle")
         {
             return "-1";
         }
@@ -195,12 +192,10 @@ namespace ariel
             {
                 // path += std::to_string(start);
                 // start = parent[(size_t)start];
-
                 path = path + std::to_string(parent[(size_t)end]) + " -> ";
                 end = parent[(size_t)end];
                 // path = std::to_string(start) + " -> " + path;
             }
-
             path += std::to_string(start);
             // return std::string.reverse(path) ;// No negative cycle found
             // reverse(path.begin(),path.end());
@@ -209,11 +204,11 @@ namespace ariel
         else
             return "-1";
     }
-    string Algorithms::isContainsCycle(Graph &g)
+    std::string Algorithms::isContainsCycle(Graph &g)
     {
-        if (negativeCycle(g) == "0")
+        if (negativeCycle(g) == "there is a negetive cycle")
         {
-            return "0";
+            return "there is a negetive cycle";
         }
         vector<bool> visited(g.getsize(), false); // Mark all vertices as not visited
         vector<int> parent(g.getsize(), -1);      // Array to store the parent of each vertex in the DFS traversal
@@ -246,19 +241,23 @@ namespace ariel
             q.pop();
 
             // Traverse all adjacent vertices of u
-            for (int v : g.getNeighbors(u))
+            vector<int> neighbors = g.getNeighbors(u);
+            for (int v : neighbors)
             {
-                // If v is not colored yet
-                if (color.find(v) == color.end())
+                if (v != -1)
                 {
-                    // Assign alternate color to this adjacent vertex
-                    color[v] = 1 - color[u];
-                    q.push(v);
-                }
-                // If v is already colored and has the same color as u, the graph is not bipartite
-                else if (color[v] == color[u])
-                {
-                    return false;
+                    // If v is not colored yet
+                    if (color.find(v) == color.end())
+                    {
+                        // Assign alternate color to this adjacent vertex
+                        color[v] = 1 - color[u];
+                        q.push(v);
+                    }
+                    // If v is already colored and has the same color as u, the graph is not bipartite
+                    else if (color[v] == color[u])
+                    {
+                        return false;
+                    }
                 }
             }
         }
@@ -267,6 +266,10 @@ namespace ariel
     }
     std::string Algorithms::isBipartite(Graph &g)
     {
+        if (negativeCycle(g) == "there is a negetive cycle")
+        {
+            return "there is a negetive cycle";
+        }
         unordered_map<int, int> color; // Map to store vertex-color pairs
 
         // Iterate over all vertices to check if the graph is bipartite
@@ -277,7 +280,7 @@ namespace ariel
                 // If the current vertex is not colored yet, run BFS from it
                 if (!isBipartiteUtil(g, i, color))
                 {
-                    return "Graph is not bipartite.";
+                    return "Graph is not bipartite";
                 }
             }
         }
@@ -324,12 +327,12 @@ namespace ariel
                     int weight = g.getWeight((size_t)u, (size_t)j);
                     if (weight != 0 && dist[(size_t)u] + weight < dist[(size_t)j])
                     {
-                        return "There is a negative cycle";
+                        return "there is a negative cycle";
                     }
                 }
             }
         }
-        return "0"; // No negative cycle found
+        return "there is no negetive cycle"; // No negative cycle found
     }
 
 }

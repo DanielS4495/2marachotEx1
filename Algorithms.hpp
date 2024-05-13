@@ -10,7 +10,7 @@ namespace ariel {
     class Algorithms {
     private:
         static int DFS(int v, vector<bool>& visited, vector<int>& parent, Graph& graph);
-        static void DFSReverse(int v, vector<bool>& visited, Graph& graph);
+        static int DFSReverse(int v, vector<bool> &visited, vector<int> &parent, ariel::Graph &graph);
         static int detectCycleDFS(int v, vector<bool>& visited, vector<int>& parent,  Graph& g);
         static std::string constructCyclePath(int v, const vector<int>& parent);
         static bool isDirectedGraph(Graph& g);
