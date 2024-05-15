@@ -19,15 +19,16 @@ namespace ariel
     }
 
     std::vector<int> Graph::getNeighbors(int v) const
-    {   
-         vector<int> check(g.size(), -1);
+    {
+        vector<int> check(g.size(), -1);
         if (v < 0 || static_cast<size_t>(v) > g.size())
         {
             throw std::out_of_range("Vertex index out of range");
         }
-        for(size_t i=0;i<g.size();i++){
-            if(g[(size_t)v][i]!=0)
-                check[i]=i;
+        for (size_t i = 0; i < g.size(); i++)
+        {
+            if (g[(size_t)v][i] != 0)
+                check[i] = i;
         }
         return check;
     }
@@ -62,7 +63,7 @@ namespace ariel
         for (size_t i = 0; i < n; ++i)
         {
             if (graph[i].size() != n)
-                throw invalid_argument("1 Invalid graph: The graph does not have an integral values.");
+                throw invalid_argument("Invalid graph: The graph is not a square matrix.");
             for (size_t j = 0; j < n; ++j)
             {
                 // if (!std::is_integral<decltype(graph[i][j])>::value)
@@ -78,16 +79,16 @@ namespace ariel
     {
         string p = "";
         int count = 0;
-        for (size_t row;row<this->getsize();row++)
+        for (size_t row = 0; row < this->getsize(); row++)
         {
-            for (size_t col;col<this->getsize();col++)
+            for (size_t col = 0; col < this->getsize(); col++)
             {
-                if (this->getWeight(row,col) != 0)
+                if (this->getWeight(row, col) != 0)
                     count++;
             }
         }
 
-        p = "Graph with " + to_string(this->getsize()) + " vertixes and " + p + "edges";
+        p = "Graph with " + to_string(this->getsize()) + " vertixes and " + to_string(count) + " edges";
         cout << p << " " << endl;
     }
 

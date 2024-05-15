@@ -45,8 +45,8 @@ namespace ariel
         {
             if (neighbor != -1 && !visited[(size_t)neighbor]) // Check if the neighbor is valid and not visited
             {
-                parent[(size_t)neighbor] = v;                                 // Set the parent of the neighbor to the current vertex v
-                int cycleNode = DFSReverse(neighbor, visited, parent, graph); // Recursive call
+                parent[(size_t)neighbor] = v;                          // Set the parent of the neighbor to the current vertex v
+                int cycleNode = DFS(neighbor, visited, parent, graph); // Recursive call
                 if (cycleNode != -1)
                 {
                     return cycleNode; // Pass the cycle detection result up the call stack
@@ -71,16 +71,16 @@ namespace ariel
         // Check if all vertices are reachable from the first vertex
         bool isconectedVertex = true;
         // int count = 0;
-        for (size_t j = 0; j < V; j++)
-        {
+        // for (size_t j = 0; j < V; j++)
+        // {
 
-            int x = DFS(j, visited, parent, graph);
-            for (size_t i = 0; i < V; i++)
-                if (!visited[i])
-                    return false;
-            visited.clear();
-            parent.clear();
-        }
+        int x = DFS(0, visited, parent, graph);
+        for (size_t i = 0; i < V; i++)
+            if (!visited[i])
+                return false;
+        //     visited.clear();
+        //     parent.clear();
+        // }
         return isconectedVertex;
     }
     int Algorithms::detectCycleDFS(int v, std::vector<bool> &visited, std::vector<int> &parent, Graph &g)
@@ -219,8 +219,8 @@ namespace ariel
                 return "The cycle is a " + constructCyclePath(i, parent);
             else
             {
-                visited.clear();
-                parent.clear();
+                fill(visited.begin(), visited.end(), false);
+                fill(parent.begin(), parent.end(), -1);
             }
         }
         return "0";
@@ -327,7 +327,7 @@ namespace ariel
                     int weight = g.getWeight((size_t)u, (size_t)j);
                     if (weight != 0 && dist[(size_t)u] + weight < dist[(size_t)j])
                     {
-                        return "there is a negative cycle";
+                        return "there is a negetive cycle";
                     }
                 }
             }

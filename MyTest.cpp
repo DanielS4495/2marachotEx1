@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
     //     g.printGraph();                                    // Should print: "Graph with 3 vertices and 4 edges."
     //      cout << Algorithms::negativeCycle(g) << endl;
-    //     cout << Algorithms::isConnected(g) << "h"<<endl;        // Should print: "1" (true).
+    //     cout << Algorithms::isConnected(g) <<endl;        // Should print: "1" (true).
     //     cout << Algorithms::shortestPath(g, 0, 2) << endl; // Should print: 0->1->2.
     //     cout << Algorithms::isContainsCycle(g) << endl;    // Should print: "0" (false).
     //     cout << Algorithms::isBipartite(g) << endl;        // Should print: "The graph is bipartite: A={0, 2}, B={1}."
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     //     g.loadGraph(graph2); // Load the graph to the object.
 
     //     g.printGraph();                                    // Should print: "Graph with 5 vertices and 8 edges."
-    //     cout << Algorithms::isConnected(g)<<"h" << endl;        // Should print: "0" (false).
+    //     cout << Algorithms::isConnected(g) << endl;        // Should print: "0" (false).
     //     cout << Algorithms::shortestPath(g, 0, 4) << endl; // Should print: "-1" (there is no path between 0 and 4).
     //     cout << Algorithms::isContainsCycle(g) << endl;    // Should print: "The cycle is: 0->1->2->0".
     //     cout << Algorithms::isBipartite(g) << endl;        // Should print: "0" (false).
@@ -92,14 +92,16 @@ int main(int argc, char **argv)
     vector<vector<int>> graph2 = {
         {0, 0, 0, 0, 0, 3},
         {0, 0, 0, 0, 3, 0},
-        {0, 5, 0, 1, 0, 0},
-        {0, 0, 0, 0, 0, 1},
+        {0, 5, 0, 0, 0, 0},
+        {0, 0, 1, 0, 0, 0},
         {7, 0, 5, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0},
+        {0, 0, 0, 1, 1, 0},
     };
     g.loadGraph(graph2);
     if (Algorithms::isConnected(g) == true)
         cout << "2 - isConnected(g) == true" << endl;
+    else
+        cout << "2 - false - isConnected(g) == " << Algorithms::isConnected(g) << endl;
 
     vector<vector<int>> graph3 = {
         {0, 0, 0, 0, 0},
@@ -122,7 +124,7 @@ int main(int argc, char **argv)
     };
     g.loadGraph(graph5);
     if (Algorithms::negativeCycle(g) == "there is a negetive cycle")
-        cout << "5 - negativeCycle(g) == there is a negetive cycle" << endl;
+        cout << "5 - negetiveCycle(g) == there is a negetive cycle" << endl;
 
     vector<vector<int>> graph6 = {
         {0, 5, 0, 0, 0, 0},
@@ -134,7 +136,7 @@ int main(int argc, char **argv)
     };
     g.loadGraph(graph6);
     if (Algorithms::negativeCycle(g) == "there is a negetive cycle")
-        cout << "6 - negativeCycle(g) == there is a negetive cycle" << endl;
+        cout << "6 - negetiveCycle(g) == there is a negetive cycle" << endl;
 
     vector<vector<int>> graph7 = {
         {0, 3, 0, 0, 0},
@@ -146,7 +148,7 @@ int main(int argc, char **argv)
 
     g.loadGraph(graph7);
     if (Algorithms::negativeCycle(g) == "there is no negetive cycle")
-        cout << "7 - negativeCycle(g) == there is no negetive cycle" << endl;
+        cout << "7 - negetiveCycle(g) == there is no negetive cycle" << endl;
 
     vector<vector<int>> graph8 = {
         {0, 5, 0, 0, 0, 0},
@@ -161,16 +163,18 @@ int main(int argc, char **argv)
         cout << "8 - isContainsCycle(g) == there is a negetive cycle" << endl;
 
     vector<vector<int>> graph9 = {
-        {0, 5, 0, 0, 0, 0},
-        {0, 0, 7, 0, 0, 1},
-        {0, 0, 0, 0, -6, 0},
-        {0, -4, 0, 0, 0, 0},
-        {0, 0, 0, 7, 0, 0},
-        {0, 0, 3, 0, 0, 0},
+        {0, 0, 7, 0, 0},
+        {0, 0, 0, 0, 3},
+        {0, 2, 0, 0, 0},
+        {1, 2, 0, 0, 0},
+        {0, 0, 3, 0, 0},
+
     };
     g.loadGraph(graph9);
     if (Algorithms::isContainsCycle(g) == "1 -> 3 -> 4 -> 2 -> 1")
         cout << "9 - isContainsCycle(g) == 1 -> 3 -> 4 -> 2 ->1 " << endl;
+    else
+        cout << "9 - false - isContainsCycle(g) == " << Algorithms::isContainsCycle(g) << endl;
 
     vector<vector<int>> graph10 = {
         {0, 0, 0, 0, 0},
