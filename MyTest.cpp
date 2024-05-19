@@ -135,7 +135,6 @@ int main(int argc, char **argv)
     g.loadGraph(graph10);
     if (Algorithms::isContainsCycle(g) == "0")
         cout << "10 - isContainsCycle(g) == 0" << endl;
-
     
 
     vector<vector<int>> graph11 = {
@@ -158,8 +157,8 @@ int main(int argc, char **argv)
         {0, 0, 0, 0, 0}};
 
     g.loadGraph(graph12);
-    if (Algorithms::shortestPath(g, 0, 2) == "2 -> 0")
-        cout << "12 - shortestPath(g,0, 2) == 2 -> 0" << endl;
+    if (Algorithms::shortestPath(g, 0, 2) == "0 -> 2")
+        cout << "12 - shortestPath(g,0, 2) == 0 -> 2" << endl;
 
     vector<vector<int>> graph13 = {
         {0, 5, 1},
@@ -167,8 +166,8 @@ int main(int argc, char **argv)
         {1, 1, 0},
     };
     g.loadGraph(graph13);
-    if (Algorithms::shortestPath(g, 0, 1) == "1 -> 2 -> 0")
-        cout << "13 - shortestPath(g,0, 1) == 1 -> 2 -> 0" << endl;
+    if (Algorithms::shortestPath(g, 0, 1) == "0 -> 2 -> 1")
+        cout << "13 - shortestPath(g,0, 1) == 0 -> 2 -> 1" << endl;
 
     vector<vector<int>> graph14 = {
         {0, 5, 1, 2, 10},
@@ -179,8 +178,8 @@ int main(int argc, char **argv)
 
     };
     g.loadGraph(graph14);
-    if (Algorithms::shortestPath(g, 0, 4) == "4 -> 3 -> 0")
-        cout << "14 - shortestPath(g,0, 4) == 4 -> 3 -> 0" << endl;
+    if (Algorithms::shortestPath(g, 0, 4) == "0 -> 3 -> 4")
+        cout << "14 - shortestPath(g,0, 4) == 0 -> 3 -> 4" << endl;
     vector<vector<int>> birpatite = {
             {0, 0, 1, 0, 0, 0},
             {0, 0, 0, 1, 1, 0},
@@ -191,8 +190,9 @@ int main(int argc, char **argv)
 
         };
     g.loadGraph(birpatite);
-    if (Algorithms::isBipartite(g) == "Graph is bipartite.")
-        cout << "15 - isBipartite(g) == Graph is bipartite." << endl;
+    if (Algorithms::isBipartite(g) == "The graph is bipartite: A={0, 1, 5}, B={2, 3, 4}.")
+        cout << "15 - isBipartite(g) == The graph is bipartite: A={0, 1, 5}, B={2, 3, 4}." << endl;
+    
 
     vector<vector<int>> isnotbipartite = {
         {0, 1, 0, 0, 7},

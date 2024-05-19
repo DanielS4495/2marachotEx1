@@ -16,45 +16,45 @@ namespace ariel
     int Algorithms::DFS(int v, vector<bool> &visited, vector<int> &parent, ariel::Graph &graph)
     {
         visited[(size_t)v] = true;
-        vector<int> neighbors = graph.getNeighbors(v); // Get neighbors of vertex v
-        for (int neighbor : neighbors) // Iterate over neighbors
+        vector<int> neighbors = graph.getNeighbors(v);
+        for (int neighbor : neighbors)
         {
-            if (neighbor != -1 && !visited[(size_t)neighbor]) // Check if the neighbor is valid and not visited
+            if (neighbor != -1 && !visited[(size_t)neighbor])
             {
-                parent[(size_t)neighbor] = v;                          // Set the parent of the neighbor to the current vertex v
-                int cycleNode = DFS(neighbor, visited, parent, graph); // Recursive call
+                parent[(size_t)neighbor] = v;
+                int cycleNode = DFS(neighbor, visited, parent, graph);
                 if (cycleNode != -1)
                 {
-                    return cycleNode; // Pass the cycle detection result up the call stack
+                    return cycleNode;
                 }
             }
             else if (neighbor != -1 && parent[(size_t)v] != neighbor)
             {
-                // Detected a cycle, return the node where the cycle starts
+                parent[(size_t)neighbor] = v;
                 return neighbor;
             }
         }
-        return -1; // No cycle found
+        return -1;
     }
-
     bool Algorithms::isConnected(Graph &graph)
     {
         size_t V = graph.getsize();
-        // Perform DFS traversal from each vertex
-        vector<bool> visited(V, false);
-        vector<int> parent(V, -1);
-        // Check if all vertices are reachable from the first vertex
-        bool isconectedVertex = true;
-        int x = DFS(0, visited, parent, graph);
+        if (V == 0)
+            return true;
+        std::vector<bool> visited(V, false);
+        std::vector<int> parent(V, -1);
+        DFS(0, visited, parent, graph);
         for (size_t i = 0; i < V; i++)
+        {
             if (!visited[i])
+            {
                 return false;
-        return isconectedVertex;
+            }
+        }
+        return true;
     }
-
     std::string Algorithms::constructCyclePath(int v, const std::vector<int> &parent)
     {
-
         std::string cyclePath;
         cyclePath += std::to_string(v);
         int u = parent[(size_t)v];
@@ -63,20 +63,21 @@ namespace ariel
             cyclePath = std::to_string(u) + " -> " + cyclePath;
             u = parent[(size_t)u];
         }
-        cyclePath = std::to_string(u) + " -> " + cyclePath; // Add the last vertex to close the cycle
+        if (u != -1)
+            cyclePath = std::to_string(u) + " -> " + cyclePath;
+        else
+            cyclePath = "";
         return cyclePath;
     }
     std::string Algorithms::shortestPath(Graph &g, int start, int end)
     {
         string path = "";
-        // Check if there is a negative cycle
         if (Algorithms::negativeCycle(g) == "there is a negetive cycle")
         {
             return "-1";
         }
         size_t V = g.getsize();
-        // Initialize distances with infinity
-        vector<int> dist(V, INT_MAX);
+        vector<int> dist(V, INT_MAX); // Initialize distances with infinity
         vector<int> parent(V, -1);
         dist[(size_t)start] = 0;
         parent[(size_t)start] = 0; // Source vertex is at distance 0
@@ -99,20 +100,30 @@ namespace ariel
                 }
             }
         }
-        // Check for negative weight cycle
-        if (dist[(size_t)end] != INT_MAX)
+        if (dist[(size_t)end] == INT_MAX)
         {
-            path = std::to_string(end) + " -> ";
-            while (parent[(size_t)end] != start)
-            {
-                path = path + std::to_string(parent[(size_t)end]) + " -> ";
-                end = parent[(size_t)end];
-            }
-            path += std::to_string(start);
-            return path;
-        }
-        else
             return "-1";
+        }
+        // Use a stack to store the path in the correct order
+        std::stack<int> pathStack;
+        int currentNode = end;
+        while (currentNode != start)
+        {
+            pathStack.push(currentNode);
+            currentNode = parent[(size_t)currentNode];
+        }
+        pathStack.push(start);
+        // Construct the path string
+        while (!pathStack.empty())
+        {
+            path += std::to_string(pathStack.top());
+            pathStack.pop();
+            if (!pathStack.empty())
+            {
+                path += " -> ";
+            }
+        }
+        return path;
     }
     std::string Algorithms::isContainsCycle(Graph &g)
     {
@@ -120,43 +131,41 @@ namespace ariel
         {
             return "there is a negetive cycle";
         }
-        vector<bool> visited(g.getsize(), false); // Mark all vertices as not visited
-        vector<int> parent(g.getsize(), -1);      // Array to store the parent of each vertex in the DFS traversal
+        vector<bool> visited(g.getsize(), false); 
+        vector<int> parent(g.getsize(), -1);     
         for (int i = 0; i < g.getsize(); ++i)
         {
-            int cyclePath = DFS(i, visited, parent, g);
-            if (parent[(size_t)i] != cyclePath && i == cyclePath && (cyclePath != -1))
-                return "The cycle is a " + constructCyclePath(i, parent);
-            else
+            if (!visited[(size_t)i]) 
             {
-                fill(visited.begin(), visited.end(), false);
-                fill(parent.begin(), parent.end(), -1);
+                int cyclePath = DFS(i, visited, parent, g);
+                if (cyclePath != -1) 
+                {
+                    std::string path = constructCyclePath(cyclePath, parent);
+                    if (path.empty())
+                        return "0";
+                    else
+                        return "The cycle is " + path;
+                }
             }
         }
         return "0";
     }
-    bool Algorithms::bfs(Graph &g, int src, std::vector<int> &color,
-                         std::vector<int> &groupA, std::vector<int> &groupB)
+    bool Algorithms::BFSColor(Graph &g, int src, std::vector<int> &color,
+                              std::vector<int> &groupA, std::vector<int> &groupB)
     {
-        // Assign initial color to source vertex
         color[(size_t)src] = 0;
-        // Add the source vertex to group A
         groupA.push_back(src);
-        // Create a queue for BFS
         std::queue<int> q;
         q.push(src);
-        // Run BFS
         while (!q.empty())
         {
             int u = q.front();
             q.pop();
-            // Traverse all adjacent vertices of u
             std::vector<int> neighbors = g.getNeighbors(u);
             for (int v : neighbors)
             {
                 if (v != -1)
                 {
-                    // If v is not colored yet
                     if (color[(size_t)v] == -1)
                     {
                         // Assign alternate color to this adjacent vertex
@@ -168,7 +177,6 @@ namespace ariel
                             groupB.push_back(v);
                         q.push(v);
                     }
-                    // If v is already colored and has the same color as u, the graph is not bipartite
                     else if (color[(size_t)v] == color[(size_t)u])
                     {
                         return false;
@@ -176,36 +184,27 @@ namespace ariel
                 }
             }
         }
-        // If no conflicts found, the graph is bipartite
         return true;
     }
-
     std::string Algorithms::isBipartite(Graph &g)
     {
         if (negativeCycle(g) == "there is a negative cycle")
         {
             return "there is a negative cycle";
         }
-
-        // Vector to store vertex-color pairs
         std::vector<int> color(g.getsize(), -1);
-        // Vectors to store vertices in the two groups
         std::vector<int> groupA;
         std::vector<int> groupB;
-
-        // Iterate over all vertices to check if the graph is bipartite
         for (int i = 0; i < g.getsize(); ++i)
         {
             if (color[(size_t)i] == -1)
             {
-                // If the current vertex is not colored yet, run BFS from it
-                if (!bfs(g, i, color, groupA, groupB))
+                if (!BFSColor(g, i, color, groupA, groupB))
                 {
                     return "Graph is not bipartite";
                 }
             }
         }
-
         // Construct the message with the two groups
         std::string message = "The graph is bipartite: A={";
         for (int v : groupA)
@@ -219,20 +218,16 @@ namespace ariel
         {
             message += std::to_string(v) + ", ";
         }
-        message.pop_back(); // Remove the trailing comma
-        message.pop_back(); // Remove the space
+        message.pop_back(); 
+        message.pop_back(); 
         message += "}.";
-
         return message;
     }
-
     std::string Algorithms::negativeCycle(Graph &g)
     {
         size_t V = g.getsize();
-        // Initialize distances with infinity
         vector<int> dist(V, INT_MAX);
-        dist[0] = 0; // Source vertex is at distance 0
-        // Relax edges repeatedly
+        dist[0] = 0;
         for (size_t i = 0; i < ((size_t)V - 1); i++)
         {
             for (size_t u = 0; u < (size_t)V; u++)
@@ -241,7 +236,6 @@ namespace ariel
                 {
                     if (u != j)
                     {
-
                         int weight = g.getWeight((size_t)u, (size_t)j);
                         if (weight != 0 && ((dist[(size_t)u] + weight) < dist[(size_t)j]))
                         {
@@ -266,6 +260,6 @@ namespace ariel
                 }
             }
         }
-        return "there is no negetive cycle"; // No negative cycle found
+        return "there is no negetive cycle";
     }
 }
